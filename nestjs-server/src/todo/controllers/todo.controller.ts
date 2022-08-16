@@ -35,7 +35,6 @@ export class TodoController {
 
     @Put(':id')
     update(@Param() { id }, @Body() todoDTO: TodoDTO, @Res() res: Response) {
-        console.log(id)
         this.todoService
             .update(id, todoDTO)
             .then(() => res.status(HttpStatus.OK).json({message: `TODO updated!`}))
@@ -45,9 +44,9 @@ export class TodoController {
     @Delete(':id')
     delete(@Param() { id }, @Res() res: Response) {
         this.todoService
-        .delete(id)
-        .then(() => res.status(HttpStatus.OK).json({message: `TODO deleted!`}))
-        .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+            .delete(id)
+            .then(() => res.status(HttpStatus.OK).json({message: `TODO deleted!`}))
+            .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
     }
 
 }
