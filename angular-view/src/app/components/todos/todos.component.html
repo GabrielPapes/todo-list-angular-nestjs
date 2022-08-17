@@ -1,0 +1,72 @@
+
+<div class="todo-card">
+<mat-card [ngStyle]="{'padding':'0px'}">
+
+
+  <!-- <mat-card-header [style.backgroundColor]="'red'">
+    <mat-card-title>
+      <h1>Todo List</h1> 
+    </mat-card-title>
+  </mat-card-header> -->
+  
+  <mat-card-content>
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <span>To Do List</span>
+        <span class="todo-toolbar"></span>
+        <button (click)="openDialog()" mat-icon-button class="add-icon" aria-label="Example icon-button with heart icon">
+          <mat-icon>add_icon</mat-icon>
+        </button>
+      </mat-toolbar-row>
+    </mat-toolbar>
+    <div>
+      <div class="container">
+        <h2>Para fazer</h2>
+      
+        <mat-action-list cdkDropList #todoList="cdkDropList" [cdkDropListData]="todo"
+          [cdkDropListConnectedTo]="todoList" (cdkDropListDropped)="drop($event)">
+          <div *ngFor="let item of todo">
+            <button mat-list-item cdkDrag> {{item.title}} </button>
+            <mat-divider></mat-divider>
+          </div>
+        </mat-action-list>
+      </div>
+      
+      <div class="container">
+        <h2>Fazendo</h2>
+      
+        <mat-action-list cdkDropList #progressList="cdkDropList" [cdkDropListData]="progress"
+          [cdkDropListConnectedTo]="progressList" (cdkDropListDropped)="drop($event)">
+          <div *ngFor="let item of progress">
+            <button mat-list-item cdkDrag> {{item.title}} </button>
+            <mat-divider></mat-divider>
+          </div>
+        </mat-action-list>
+      </div>
+      
+      
+      <div class="container">
+        <h2>Concluído</h2>
+      
+        <mat-action-list cdkDropList #doneList="cdkDropList" [cdkDropListData]="done"
+          [cdkDropListConnectedTo]="doneList" (cdkDropListDropped)="drop($event)">
+          <div *ngFor="let item of done">
+            <button mat-list-item cdkDrag> {{item.title}} </button>
+            <mat-divider></mat-divider>
+          </div>
+        </mat-action-list>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <!-- <mat-card-actions align="end">
+    <button mat-raised-button color="primary">Nova Tarefa</button>
+  </mat-card-actions> -->
+
+</mat-card>
+
+</div>
+
+
+
+

@@ -1,6 +1,6 @@
-export class TodoDTO {
+export interface TodoDTO {
     title: string;
     description: string;
-    status: 'todo' | 'done' | 'progress';
+    status?: string;
     creationDate: Date;
 }
