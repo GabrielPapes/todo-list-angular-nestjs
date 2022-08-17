@@ -1,2 +1,2 @@
 # todo-list-angular-nestjs
-Todo list made with Angular frontend and NestJS backand 
+Todo list made with Angular frontend and NestJS backend 
