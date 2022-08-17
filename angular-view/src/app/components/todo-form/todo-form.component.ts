@@ -51,6 +51,7 @@ export class TodoFormComponent implements OnInit {
     this.todoService.createTodo(todo)
       .subscribe((resp) => {
         console.log(resp)
+        this.todoService.notify("todo created")
         this.dialogRef.close();
       })
   }

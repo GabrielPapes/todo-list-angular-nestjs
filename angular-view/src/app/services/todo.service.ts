@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { TodoDTO } from '../dto/todo.dto';
 
@@ -11,10 +11,19 @@ const NEST_BACKEND = `${environment.NEST_BACKEND_IP}:${environment.NEST_BACKEND_
   providedIn: 'root'
 })
 export class TodoService {
+  private replaySubject = new ReplaySubject();
 
   constructor(
     private httpClient: HttpClient
   ) { }
+
+  public getReplaySubject(): Observable<any> {
+    return this.replaySubject.asObservable();
+  }
+
+  notify(message: string) {
+    this.replaySubject.next(message);
+  }
 
   getTodo(id: string): Observable<TodoDTO> {
     const UPDATED_URL = `${NEST_BACKEND}/${id}`;

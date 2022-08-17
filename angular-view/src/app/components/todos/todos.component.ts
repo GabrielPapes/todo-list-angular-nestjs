@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { TodoService } from 'src/app/services/todo.service';
 import { TodoDTO } from 'src/app/dto/todo.dto';
 import { TodoFormComponent } from '../todo-form/todo-form.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-todos',
@@ -14,6 +15,12 @@ export class TodosComponent implements OnInit {
   todo: Array<TodoDTO> = [];
   progress: Array<TodoDTO> = [];
   done: Array<TodoDTO> = [];
+
+  private subscriptions: Array<Subscription>;
+  set subscription(s: Subscription) {
+    this.subscriptions.push(s);
+  }
+
 
   // todo = [
   //   'Get to work',
@@ -41,20 +48,34 @@ export class TodosComponent implements OnInit {
     private todoService: TodoService,
     public dialog: MatDialog
   ) {
-
+    this.subscriptions = new Array<Subscription>();
   }
 
   ngOnInit(): void {
-    this.todoService.getAllTodos()
-      .subscribe(todos => {
-        console.log(todos);
-        todos.forEach(td => {
-          if(td.status === 'todo') this.todo.push(td)
-          if(td.status === 'progress') this.todo.push(td)
-          if(td.status === 'done') this.done.push(td)
-        })
+    this.subscription = this.todoService.getReplaySubject()
+      .subscribe(() => {
+        this.subscription = this.todoService.getAllTodos()
+          .subscribe(todos => {
+            this.todo = [];
+            this.progress = [];
+            this.done = [];
+
+            console.log(todos);
+            todos.forEach(td => {
+              if(td.status === 'todo') this.todo.push(td)
+              if(td.status === 'progress') this.progress.push(td)
+              if(td.status === 'done') this.done.push(td)
+            })
+          })
       })
+
+      this.todoService.notify("initializing component")
+
   }
+
+  
+
+
 
   drop(event: CdkDragDrop<TodoDTO[]>): void {
     if (event.previousContainer === event.container) {
