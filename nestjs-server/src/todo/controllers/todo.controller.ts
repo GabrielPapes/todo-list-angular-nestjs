@@ -11,42 +11,71 @@ export class TodoController {
 
     @Get(':id')
     findById(@Param() { id }, @Res() res: Response) {
-        this.todoService
-            .findById(id)
-            .then(todo => res.status(HttpStatus.OK).json(todo))
-            .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        try {
+            this.todoService
+                .findById(id)
+                .then(todo => res.status(HttpStatus.OK).json(todo))
+                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+
+        } catch (err) {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+        }
     }
     
     @Get()
     findAll(@Res() res: Response) {
-        this.todoService
+        try {
+            this.todoService
             .findAll()
             .then(todos => res.status(HttpStatus.OK).json(todos))
             .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        } catch(err) {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+        }
+
     }
 
     @Post()
     create(@Body() todoDTO: TodoDTO , @Res() res: Response) {
-        this.todoService
-            .create(todoDTO)
-            .then(() => res.status(HttpStatus.CREATED).json({message: "TODO created!"}))
-            .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        try {
+            this.todoService
+                .create(todoDTO)
+                .then(() => res.status(HttpStatus.CREATED).json({message: "TODO created!"}))
+                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        } catch (err) {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+        }
+        
     }
 
     @Put(':id')
     update(@Param() { id }, @Body() todoDTO: TodoDTO, @Res() res: Response) {
-        this.todoService
-            .update(id, todoDTO)
-            .then(() => res.status(HttpStatus.OK).json({message: `TODO updated!`}))
-            .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        try {
+            this.todoService
+                .update(id, todoDTO)
+                .then(() => res.status(HttpStatus.OK).json({message: `TODO updated!`}))
+                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        } catch (err) {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+        }
     }
 
     @Delete(':id')
     delete(@Param() { id }, @Res() res: Response) {
-        this.todoService
-            .delete(id)
-            .then(() => res.status(HttpStatus.OK).json({message: `TODO deleted!`}))
-            .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        try {
+            this.todoService
+                .delete(id)
+                .then(() => res.status(HttpStatus.OK).json({message: `TODO deleted!`}))
+                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+        } catch (err) {
+            console.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+        }
+
     }
 
 }

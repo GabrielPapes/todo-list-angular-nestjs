@@ -24,6 +24,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { StoreModule } from '@ngrx/store';
+
+import { todoReducer } from '../app/states/todo.reducers';
+import { EffectsModule } from '@ngrx/effects';
+import { TodoService } from './services/todo.service';
 
 @NgModule({
   declarations: [
@@ -53,6 +58,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     FormsModule,
     ReactiveFormsModule,
     MatButtonToggleModule,
+    StoreModule.forRoot({todos: todoReducer}),
+    EffectsModule.forRoot([TodoService])
     
   ],
   providers: [],

@@ -1,16 +1,22 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { first } from 'rxjs';
-import { TodoDTO } from 'src/app/dto/todo.dto';
-import { TodoService } from 'src/app/services/todo.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { MatDialogRef} from '@angular/material/dialog';
+import { Actions, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { catchError, Observable, Subject, takeUntil } from 'rxjs';
+import ActionWithPayload from 'src/app/models/actionWithPayload.model';
+import { Todo } from 'src/app/models/todo.model';
+import { CREATE_TODO } from 'src/app/states/todo.action';
+import { TodoState } from 'src/app/states/todo.state';
 
 @Component({
   selector: 'app-todo-form',
   templateUrl: './todo-form.component.html',
   styleUrls: ['./todo-form.component.scss']
 })
-export class TodoFormComponent implements OnInit {
+export class TodoFormComponent implements OnInit, OnDestroy {
+  destroy$ = new Subject<boolean>();
+
   id = null;
   title = new FormControl('', Validators.required);
   description = new FormControl('');
@@ -19,41 +25,62 @@ export class TodoFormComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<TodoFormComponent>,
-    private todoService: TodoService,
-  ) {}
+    private store: Store<TodoState>,
+    private actions: Actions,
+  ) {
+    this.actions
+      .pipe(
+        ofType(CREATE_TODO),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((data) => {
+        this.dialogRef.close();
+      })
+  }
 
   ngOnInit(): void {
-    if(this.id) {
-      this.todoService.getTodo(this.id)
-        .pipe(first(val => val !== null))
-        .subscribe(todo => {
-          this.title.setValue(todo.title);
-          this.description.setValue(todo.description);
-        })
-    }
+
+    // if(this.id) {
+    //   // this.todoService.getTodo(this.id)
+    //   //   .pipe(first(val => val !== null))
+    //   //   .subscribe(todo => {
+    //   //     this.title.setValue(todo.title);
+    //   //     this.description.setValue(todo.description);
+    //   //   })
+    // }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.complete();
   }
 
   changeStatus(status: string) {
-    console.log(status)
     this.status.setValue(status);
   }
 
   onSubmit(): void {
-    const todo: TodoDTO = {
+    const todo: Todo = {
       title: this.title.value!,
       description: this.description.value!,
       status: this.status.value!,
       creationDate: new Date(),
     }
 
-    console.log(todo)
+    const todoAction: ActionWithPayload<Todo> = {
+      type: CREATE_TODO,
+      payload: todo
+    }
 
-    this.todoService.createTodo(todo)
-      .subscribe((resp) => {
-        console.log(resp)
-        this.todoService.notify("todo created")
-        this.dialogRef.close();
-      })
+    this.store.dispatch(todoAction)
+    
+
+    // this.todoService.createTodo(todo)
+    //   .subscribe((resp) => {
+    //     console.log(resp)
+    //     this.todoService.notify("todo created")
+    //     this.dialogRef.close();
+    //   })
   }
 
   onCloseClick(): void {
