@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { ListTodo } from 'src/app/models/list-todo.model';
 import { Todo } from 'src/app/models/todo.model';
 import { CardStore } from 'src/app/states/card.store';
 import { GetTodo } from 'src/app/states/todo.action';
-import { TodoState } from 'src/app/states/todo.state';
+import { selectTodoList, TodoState } from 'src/app/states/todo.state';
+import { TodoFormComponent } from '../todo-form/todo-form.component';
 
 @Component({
   selector: 'app-board',
@@ -17,7 +18,7 @@ export class BoardComponent implements OnInit {
   cardStore: CardStore;
   lists: ListTodo[];
 
-  todoState$: Observable<TodoState>;
+  todoState$: Observable<Todo[]>;
 
   private subscriptions: Array<Subscription>;
   set subscription(s: Subscription) {
@@ -25,11 +26,10 @@ export class BoardComponent implements OnInit {
   }
 
   constructor(
-    private dialog: MatDialog,
     private store: Store<TodoState>
   ) {
-    this.todoState$ = this.store;
     this.subscriptions = new Array<Subscription>();
+    this.todoState$ = this.store.pipe(select((states: any) => selectTodoList(states)));
 
     this.cardStore = new CardStore();
     this.lists = [
@@ -53,14 +53,14 @@ export class BoardComponent implements OnInit {
 
   ngOnInit(): void {
     const getTodoAction = new GetTodo();
+    
     this.subscription = this.todoState$
-    .subscribe((obj: any) => {
+    .subscribe((todos: Todo[]) => {
       const todo: Todo[] = [];
       const progress: Todo[] = [];
       const done: Todo[] = [];
 
-      const todos: TodoState = obj.todos;
-      todos.TodoList.forEach(td => {
+      todos.forEach(td => {
         if(td.status === 'todo') todo.push(td)
         if(td.status === 'progress') progress.push(td)
         if(td.status === 'done') done.push(td)

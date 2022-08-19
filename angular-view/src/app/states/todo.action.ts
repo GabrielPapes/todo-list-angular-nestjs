@@ -33,12 +33,9 @@ export class GetSingleTodo implements Action {
 
 export class UpdateTodo implements Action {
     readonly type = GET_SINGLE_TODO;
-    payload: {
-        id: string,
-        todo: Todo,
-    };
+    payload: Todo
 
-    constructor(payload: {id: string, todo: Todo}) {
+    constructor(payload: Todo) {
         this.payload = payload;
     }
 }

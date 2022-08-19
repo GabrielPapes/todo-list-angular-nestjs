@@ -1,29 +1,70 @@
-<h1 mat-dialog-title>{{"Nova Tarefa"}}</h1>
-<div mat-dialog-content>
-    <p>Título da tarefa</p>
+<div *ngIf="!toggleEdit">
+  <div mat-dialog-content>
+    <mat-card>
+      <mat-card-title>
+        <h1 mat-dialog-title>{{ title.value }}</h1>
+      </mat-card-title>
+
+      <mat-card-subtitle> {{getStatus()}} </mat-card-subtitle>
+      
+      <mat-card-content>
+        {{description.value ? description.value : "Clique em editar para adicionar uma descrição."}}
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-raised-button color="accent" (click)="toggleEdit = true">
+      Editar
+    </button>
+    <button mat-raised-button color="warn" (click)="toggleEdit = true">
+      Remover
+    </button>
+  </div>
+</div>
+
+<div *ngIf="toggleEdit">
+  <div mat-dialog-content>
+    <h1 mat-dialog-title>Editando {{ title.value }}</h1>
+
     <p>
-        <mat-form-field appearance="outline">
-          <mat-label>Título</mat-label>
-          <input [formControl]="title" matInput placeholder="Levar o cachorro para passear">
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Título</mat-label>
+        <input
+          [formControl]="title"
+          matInput
+          placeholder="Levar o cachorro para passear"
+        />
+      </mat-form-field>
     </p>
 
     <p>Descrição</p>
     <p class="todo-title-input">
-        <mat-form-field appearance="outline">
-          <mat-label>Descrição</mat-label>
-          <input matInput placeholder="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque">
-        </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Descrição</mat-label>
+        <textarea
+          [formControl]="description"
+          matInput
+          placeholder="Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque"
+        ></textarea>
+      </mat-form-field>
     </p>
 
     <h3>Status</h3>
-    <mat-button-toggle-group (change)="changeStatus(toggleBtn.value)" #toggleBtn="matButtonToggleGroup" name="favoriteColor" aria-label="Favorite Color">
-        <mat-button-toggle value="todo">Para fazer</mat-button-toggle>
-        <mat-button-toggle value="progress">Em progresso</mat-button-toggle>
-        <mat-button-toggle value="done">Concluído</mat-button-toggle>
+    <mat-button-toggle-group
+      [formControl]="status"
+      (change)="changeStatus(toggleBtn.value)"
+      #toggleBtn="matButtonToggleGroup"
+      name="favoriteColor"
+      aria-label="Favorite Color"
+    >
+      <mat-button-toggle value="todo">Para fazer</mat-button-toggle>
+      <mat-button-toggle value="progress">Em progresso</mat-button-toggle>
+      <mat-button-toggle value="done">Concluído</mat-button-toggle>
     </mat-button-toggle-group>
-</div>
-<div mat-dialog-actions>
-  <button mat-button (click)="onCloseClick()">Cancelar</button>
-  <button mat-button cdkFocusInitial (click)="onSubmit()">Ok</button>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-raised-button color="primary" cdkFocusInitial (click)="onSubmit()">Ok</button>
+    <button mat-raised-button color="accent" (click)="onCancel()">Cancelar</button>
+  </div>
 </div>
