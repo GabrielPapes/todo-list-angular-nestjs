@@ -42,7 +42,7 @@ export class TodoController {
         try {
             this.todoService
                 .create(todoDTO)
-                .then(() => res.status(HttpStatus.CREATED).json({message: "TODO created!"}))
+                .then((todo) => res.status(HttpStatus.CREATED).json(todo))
                 .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
         } catch (err) {
             console.log(err);

@@ -3,7 +3,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef} from '@angular/material/dialog';
 import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { catchError, Observable, Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import ActionWithPayload from 'src/app/models/actionWithPayload.model';
 import { Todo } from 'src/app/models/todo.model';
 import { CREATE_TODO } from 'src/app/states/todo.action';

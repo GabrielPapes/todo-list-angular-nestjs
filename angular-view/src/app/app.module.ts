@@ -29,12 +29,18 @@ import { StoreModule } from '@ngrx/store';
 import { todoReducer } from '../app/states/todo.reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { TodoService } from './services/todo.service';
+import { BoardComponent } from './components/board/board.component';
+import { ListComponent } from './components/list/list.component';
+import { CardComponent } from './components/card/card.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TodosComponent,
     TodoFormComponent,
+    BoardComponent,
+    ListComponent,
+    CardComponent,
   ],
   imports: [
     BrowserModule,

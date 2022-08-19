@@ -16,27 +16,14 @@ export class TodoService {
 
   constructor(private httpClient: HttpClient, private action$: Actions) {}
 
-  // public getReplaySubject(): Observable<any> {
-  //   return this.replaySubject.asObservable();
-  // }
-
-  // notify(message: string) {
-  //   this.replaySubject.next(message);
-  // }
-
-  // getTodo(id: string): Observable<Todo> {
-  //   const UPDATED_URL = `${NEST_BACKEND}/${id}`;
-  //   return this.httpClient.get<Todo>(UPDATED_URL);
-  // }
-
   @Effect()
   getTodos: Observable<Action> = this.action$.pipe(
     ofType(GET_TODO),
-    mergeMap((action) =>
+    mergeMap(() =>
       this.httpClient.get<Todo[]>(NEST_BACKEND)
         .pipe(
           map((data) => {
-            console.log('Http GET Call Success: ', data);
+            console.log('Http GET Call Success: '); //, data);
             return new GetTodoSuccess(data as Todo[]);
           }),
           catchError(err => {
@@ -56,7 +43,7 @@ export class TodoService {
       })
       .pipe(
         map(data => {
-          console.log('Http POST Call Success: ', data)
+          console.log('Http POST Call Success: '); //, data)
           return new CreateTodoSuccess(action.payload as Todo);
         }),
         catchError(err => {
@@ -67,22 +54,4 @@ export class TodoService {
       
       )
   )
-
-  // getAllTodos(): Observable<Array<Todo>> {
-  //   return this.httpClient.get<Todo[]>(NEST_BACKEND);
-  // }
-
-  // createTodo(todo: Todo) {
-  //   return this.httpClient.post(NEST_BACKEND, todo);
-  // }
-
-  // updateTodo(id: string, todo: Todo) {
-  //   const UPDATED_URL = `${NEST_BACKEND}/${id}`;
-  //   return this.httpClient.put(UPDATED_URL, todo);
-  // }
-
-  // deleteTodo(id: string) {
-  //   const UPDATED_URL = `${NEST_BACKEND}/${id}`;
-  //   return this.httpClient.delete(UPDATED_URL);
-  // }
 }
