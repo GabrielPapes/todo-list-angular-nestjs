@@ -1,58 +1,63 @@
-import { Body, Controller, Delete, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Delete, HttpStatus, Logger, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { SubTodoDTO } from '../dto/subtodo.dto';
-import { TodoService } from '../services/todo.service';
-import mongoose, { ObjectId } from 'mongoose';
-
+import { SubtodoService } from '../services/subtodo.service';
 
 @Controller('subtodo')
 export class SubtodoController {
+    logger = new Logger(SubtodoController.name);
+
     constructor(
-        private todoService: TodoService
-    ) {}
+        private subtodoService: SubtodoService
+    ) { }
 
     @Post()
-    create(@Body() subtodoDTO: SubTodoDTO , @Res() res: Response) {
+    create(@Body() subTodoDTO: SubTodoDTO, @Res() res: Response) {
         try {
-            this.todoService
-                .createSubtodo(subtodoDTO)
+            this.subtodoService
+                .create(subTodoDTO)
                 .then((todo) => res.status(HttpStatus.CREATED).json(todo))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+                .catch(err => {
+                    this.logger.error(err)
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
             console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
-        
+
     }
 
     @Put(':id')
-    update(@Param() { id }, @Body() subtodoDTO: SubTodoDTO, @Res() res: Response) {
+    update(@Param() { id }, @Body() subTodoDTO: SubTodoDTO, @Res() res: Response) {
         try {
-            this.todoService
-                .updateSubtodo(id, subtodoDTO)
-                .then(() => res.status(HttpStatus.OK).json({message: `SUBTODO updated!`}))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+            this.subtodoService
+                .update(id, subTodoDTO)
+                .then(() => res.status(HttpStatus.OK).json({ message: `SUBTODO updated!` }))
+                .catch(err => {
+                    this.logger.error(err)
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
             console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
     }
 
-    @Delete(':id')
-    delete(@Param() { id }, @Res() res: Response) {
+    @Delete(':id/:todoId')
+    delete(@Param() { id, todoId }, @Res() res: Response) {
         try {
-            this.todoService
-                .deleteSubtodo(id)
-                .then(() => res.status(HttpStatus.OK).json({message: `SUBTODO deleted!`}))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+            this.subtodoService
+                .delete(id, todoId)
+                .then(() => res.status(HttpStatus.OK).json({ message: `SUBTODO deleted!` }))
+                .catch(err => {
+                    this.logger.error(err)
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
             console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
 
     }
-
-
-
-
 }

@@ -1,13 +1,17 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Logger, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { TodoDTO } from '../dto/todo.dto';
 import { TodoService } from '../services/todo.service';
 
 @Controller('todo')
 export class TodoController {
+    logger = new Logger(TodoController.name);
+    
     constructor(
-        private todoService: TodoService
-    ) {}
+        private todoService: TodoService,
+    ) {
+
+    }
 
     @Get(':id')
     findById(@Param() { id }, @Res() res: Response) {
@@ -15,40 +19,48 @@ export class TodoController {
             this.todoService
                 .findById(id)
                 .then(todo => res.status(HttpStatus.OK).json(todo))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
-
+                .catch(err => {
+                    this.logger.error(err);
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
-            console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            this.logger.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
     }
-    
+
     @Get()
     findAll(@Res() res: Response) {
         try {
             this.todoService
-            .findAll()
-            .then(todos => res.status(HttpStatus.OK).json(todos))
-            .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
-        } catch(err) {
-            console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+                .findAll()
+                .then(todos => res.status(HttpStatus.OK).json(todos))
+                .catch(err => {
+                    this.logger.error(err);
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
+        } catch (err) {
+            this.logger.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
 
     }
 
     @Post()
-    create(@Body() todoDTO: TodoDTO , @Res() res: Response) {
+    create(@Body() todoDTO: TodoDTO, @Res() res: Response) {
         try {
             this.todoService
                 .create(todoDTO)
                 .then((todo) => res.status(HttpStatus.CREATED).json(todo))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+                .catch(err => {
+                    this.logger.error(err);
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
-            console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            this.logger.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
-        
+
     }
 
     @Put(':id')
@@ -56,11 +68,14 @@ export class TodoController {
         try {
             this.todoService
                 .update(id, todoDTO)
-                .then(() => res.status(HttpStatus.OK).json({message: `TODO updated!`}))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+                .then(() => res.status(HttpStatus.OK).json({ message: `TODO updated!` }))
+                .catch(err => {
+                    this.logger.error(err);
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
-            console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            this.logger.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
     }
 
@@ -69,11 +84,14 @@ export class TodoController {
         try {
             this.todoService
                 .delete(id)
-                .then(() => res.status(HttpStatus.OK).json({message: `TODO deleted!`}))
-                .catch(err => res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err}))
+                .then(() => res.status(HttpStatus.OK).json({ message: `TODO deleted!` }))
+                .catch(err => {
+                    this.logger.error(err);
+                    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
+                })
         } catch (err) {
-            console.log(err);
-            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({message: err});
+            this.logger.log(err);
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
         }
 
     }
