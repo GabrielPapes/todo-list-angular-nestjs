@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongoDatabaseModule } from './database/mongo/mongo.module';
@@ -8,6 +9,7 @@ import { TodoModule } from './todo/todo.module';
   imports: [
     MongoDatabaseModule,
     TodoModule,
+    ConfigModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],

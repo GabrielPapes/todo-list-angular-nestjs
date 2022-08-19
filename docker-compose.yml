@@ -1,0 +1,37 @@
+version: "2.3"
+services:
+  backend:
+    container_name: nestjs_backend
+    links:
+      - mongo
+    environment:
+      - MONGO_HOST=MONGO_HOST
+      - MONGO_HOST_IP=mongo
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=todo
+    extends:
+      file: nestjs-server/docker-compose.yml
+      service: backend
+  
+  frontend:
+    container_name: angular_frontend
+    extends:
+      file: angular-view/docker-compose.yml
+      service: frontend
+
+  mongo:
+    container_name: mongo
+    restart: always
+    image: mongo:4.0
+    environment: 
+      - MONGO_HOST=host.docker.internal
+    volumes: 
+      - ~/data/db:/data/db
+    networks:
+      - todo_backend
+
+networks:
+  todo_backend:
+    # external:
+    #   name: todo_backend
+  todo_frontend:
