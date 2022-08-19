@@ -22,14 +22,6 @@ export const CREATE_TODO =  '[To Do] Create Todo';
 export const CREATE_TODO_SUCCESS = '[To Do] Create Todo Success';
 export const CREATE_TODO_ERROR = '[To Do] Create Todo Error';
 
-export class GetSingleTodo implements Action {
-    readonly type = GET_SINGLE_TODO;
-    payload: string;
-
-    constructor(payload: string) {
-        this.payload = payload;
-    }
-}
 
 export class UpdateTodo implements Action {
     readonly type = GET_SINGLE_TODO;
@@ -42,9 +34,9 @@ export class UpdateTodo implements Action {
 
 export class DeleteTodo implements Action {
     readonly type = GET_SINGLE_TODO;
-    payload: string;
+    payload: Todo;
 
-    constructor(payload: string) {
+    constructor(payload: Todo) {
         this.payload = payload;
     }
 }
@@ -102,8 +94,11 @@ export class UpdateTodoSuccess implements ActionWithPayload<Todo> {
 
 export class DeleteTodoSuccess implements Action {
     readonly type = DELETE_TODO_SUCCESS;
+    payload: Todo
 
-    constructor() {}
+    constructor(payload: Todo) {
+        this.payload = payload;
+    }
 }
 
 export class TodoError implements Action {

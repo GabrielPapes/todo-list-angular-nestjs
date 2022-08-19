@@ -6,7 +6,7 @@ import { select, Store } from '@ngrx/store';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import ActionWithPayload from 'src/app/models/actionWithPayload.model';
 import { Todo } from 'src/app/models/todo.model';
-import { UPDATE_TODO } from 'src/app/states/todo.action';
+import { DELETE_TODO, UPDATE_TODO } from 'src/app/states/todo.action';
 import { getTodoById, TodoState } from 'src/app/states/todo.state';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
@@ -59,9 +59,11 @@ export class TodoFormComponent implements OnInit, OnDestroy {
           select((states: any) => (getTodoById(this.id!))(states)
           ))
         .subscribe((todo: Todo | undefined) => {
-          this.title.setValue(todo!.title)
-          this.description.setValue(todo!.description);
-          this.status.setValue(todo!.status || 'todo');
+          if(todo) {
+            this.title.setValue(todo!.title)
+            this.description.setValue(todo!.description);
+            this.status.setValue(todo!.status || 'todo');
+          }
         })
     
     }
@@ -99,6 +101,25 @@ export class TodoFormComponent implements OnInit, OnDestroy {
 
     const todoAction: ActionWithPayload<Todo> = {
       type: UPDATE_TODO,
+      payload: todo
+    }
+
+    this.store.dispatch(todoAction)
+  }
+
+  onDelete(): void {
+    this.dialogRef.close();
+
+    const todo: Todo = {
+      _id: this.id!,
+      title: this.title.value!,
+      description: this.description.value!,
+      status: this.status.value!,
+      creationDate: new Date(),
+    }
+
+    const todoAction: ActionWithPayload<Todo> = {
+      type: DELETE_TODO,
       payload: todo
     }
 
