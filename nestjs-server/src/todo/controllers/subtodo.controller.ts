@@ -33,7 +33,7 @@ export class SubtodoController {
         try {
             this.subtodoService
                 .update(id, subTodoDTO)
-                .then(() => res.status(HttpStatus.OK).json({ message: `SUBTODO updated!` }))
+                .then((todo) => res.status(HttpStatus.OK).json(todo))
                 .catch(err => {
                     this.logger.error(err)
                     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });
@@ -49,7 +49,7 @@ export class SubtodoController {
         try {
             this.subtodoService
                 .delete(id, todoId)
-                .then(() => res.status(HttpStatus.OK).json({ message: `SUBTODO deleted!` }))
+                .then((todo) => res.status(HttpStatus.OK).json(todo))
                 .catch(err => {
                     this.logger.error(err)
                     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: err });

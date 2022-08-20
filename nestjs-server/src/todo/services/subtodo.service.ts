@@ -18,20 +18,26 @@ export class SubtodoService {
         const todo = await this.todoModel.findById(subtodoDTO.todoId);
         todo.subTodos = todo.subTodos ? [...todo.subTodos, subtodoDTO]  : [subtodoDTO]
         todo.markModified('subTodos');
+
         return todo.save();
     }
 
     async update(id, subtodoDTO: SubTodoDTO): Promise<Todo> {
         const todo = await this.todoModel.findById(subtodoDTO.todoId);
-        return todo.update({
-            subTodos: todo.subTodos.map(subTodo => subTodo._id === id ? subtodoDTO: subTodo)
-        });
+        todo.subTodos = todo.subTodos.map(subTodo => subTodo._id === id ? subtodoDTO: subTodo);
+        todo.markModified('subTodos');
+
+        return todo.save()
     }
 
     async delete(id, todoId): Promise<Todo> {
+        this.logger.warn(id, todoId)
+
         const todo = await this.todoModel.findById(todoId);
-        return todo.update({
-            subTodos: todo.subTodos.filter(subTodo => subTodo._id !== id)
-        });
+        todo.subTodos = todo.subTodos.filter(subTodo => !subTodo._id.equals(id));
+        
+        todo.markModified('subTodos');
+
+        return todo.save();
     }
 }

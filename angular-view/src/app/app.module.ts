@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatSliderModule } from '@angular/material/slider';
-import { TodosComponent } from './components/todos/todos.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
@@ -25,6 +24,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { StoreModule } from '@ngrx/store';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { todoReducer } from '../app/states/todo.reducers';
 import { EffectsModule } from '@ngrx/effects';
@@ -36,7 +36,6 @@ import { CardComponent } from './components/card/card.component';
 @NgModule({
   declarations: [
     AppComponent,
-    TodosComponent,
     TodoFormComponent,
     BoardComponent,
     ListComponent,
@@ -65,7 +64,8 @@ import { CardComponent } from './components/card/card.component';
     ReactiveFormsModule,
     MatButtonToggleModule,
     StoreModule.forRoot({todos: todoReducer}),
-    EffectsModule.forRoot([TodoService])
+    EffectsModule.forRoot([TodoService]),
+    MatCheckboxModule,
     
   ],
   providers: [],

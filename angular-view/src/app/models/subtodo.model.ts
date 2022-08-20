@@ -1,6 +1,6 @@
 export interface SubTodo {
     _id?: string;
-    parentId: string;
+    todoId: string;
     title: string;
     isDone: boolean;
 }

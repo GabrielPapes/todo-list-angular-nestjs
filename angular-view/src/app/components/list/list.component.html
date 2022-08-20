@@ -1,13 +1,14 @@
 <div class="list">
 	<div class="list-title">
 		<span><strong>{{list?.name}}</strong></span>
-		<button (click)="toggleAddCard()" color="primary" mat-mini-fab class="add-icon" aria-label="Adicionar">
+		<button (click)="toggleAddCard()" color="primary" mat-icon-button class="add-icon" aria-label="Adicionar">
 			<mat-icon>add_icon</mat-icon>
 		</button>
 	</div>
 
-	<p>
-        <mat-form-field *ngIf="addCard" appearance="fill">
+	<p *ngIf="addCard">
+		Pressione Enter para adicionar (Esc para cancelar)
+        <mat-form-field  appearance="fill">
           	<mat-label>Título</mat-label>
 			<input #addCardInput type="text" (keyup.esc)="toggleAddCard()" (keyup.enter)="onEnter(addCardInput.value, list?.status); addCardInput.value=''; addCard=false;" autofocus matInput placeholder="Levar o cachorro para passear">
         </mat-form-field>

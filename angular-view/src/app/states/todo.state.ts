@@ -25,3 +25,14 @@ export const getTodoById = (id: string) => createSelector(
     (todos) => todos.find(todo => todo._id === id)
 )
 
+export const getSubtodoById = (id: string, todoId: string) => createSelector(
+    selectTodoList,
+    (todos) => {
+        const todo = todos.find(todo => todo._id === todoId);
+        if(!todo) 
+            return null;
+        else return todo.subTodos?.find(sub => sub._id === id);
+    }
+
+)
+

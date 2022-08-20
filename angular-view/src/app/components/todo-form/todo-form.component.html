@@ -1,14 +1,68 @@
 <div *ngIf="!toggleEdit">
   <div mat-dialog-content>
+    <h1 mat-dialog-title>{{ title.value }}</h1>
+    <div>
+      {{
+        description.value
+          ? description.value
+          : "Clique em editar para adicionar uma descrição."
+      }}
+    </div>
+
+    <br />
     <mat-card>
       <mat-card-title>
-        <h1 mat-dialog-title>{{ title.value }}</h1>
+        <div class="list-title">
+          <h3>Subtarefas</h3>
+          <button
+            (click)="toggleAddSubtodo()"
+            color="primary"
+            mat-icon-button
+            class="add_icon"
+            aria-label="Adicionar subtarefa"
+          >
+            <mat-icon>add_icon</mat-icon>
+          </button>
+        </div>
       </mat-card-title>
 
-      <mat-card-subtitle> {{getStatus()}} </mat-card-subtitle>
-      
+      <mat-card-subtitle>
+        <p *ngIf="addSubtodo">
+          Pressione Enter para adicionar (Esc para cancelar)
+          <mat-form-field appearance="fill">
+            <mat-label>Título</mat-label>
+            <input
+              #addSubTodoInput
+              type="text"
+              (keyup.esc)="toggleAddSubtodo()"
+              (keyup.enter)="toggleAddSubtodo(); onEnter(addSubTodoInput.value);"
+              autofocus
+              matInput
+              placeholder="Levar o cachorro para passear"
+            />
+          </mat-form-field>
+        </p>
+      </mat-card-subtitle>
+
       <mat-card-content>
-        {{description.value ? description.value : "Clique em editar para adicionar uma descrição."}}
+        <mat-selection-list #subTodos>
+          <div *ngFor="let subtodo of subtodos">
+            <div class="list-subtodo">
+              <button
+                (click)="onDeleteSubtodo(subtodo)"
+                color="warn"
+                mat-icon-button
+                class="delete_forever"
+                aria-label="Remover"
+              >
+                <mat-icon>delete_forever</mat-icon>
+              </button>
+              <mat-list-option>
+                {{ subtodo.title }}
+              </mat-list-option>
+            </div>
+          </div>
+        </mat-selection-list>
       </mat-card-content>
     </mat-card>
   </div>
@@ -17,9 +71,7 @@
     <button mat-raised-button color="accent" (click)="toggleEdit = true">
       Editar
     </button>
-    <button mat-raised-button color="warn" (click)="onDelete()">
-      Remover
-    </button>
+    <button mat-raised-button color="warn" (click)="onDelete()">Remover</button>
   </div>
 </div>
 
@@ -64,7 +116,16 @@
     </mat-button-toggle-group>
   </div>
   <div mat-dialog-actions>
-    <button mat-raised-button color="primary" cdkFocusInitial (click)="onSubmit()">Ok</button>
-    <button mat-raised-button color="accent" (click)="onCancel()">Cancelar</button>
+    <button
+      mat-raised-button
+      color="primary"
+      cdkFocusInitial
+      (click)="onSubmit()"
+    >
+      Ok
+    </button>
+    <button mat-raised-button color="accent" (click)="onCancel()">
+      Cancelar
+    </button>
   </div>
 </div>

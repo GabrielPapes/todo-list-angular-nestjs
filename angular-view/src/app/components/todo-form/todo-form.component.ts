@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { MatDialogRef} from '@angular/material/dialog';
 import { Actions, ofType } from '@ngrx/effects';
@@ -6,9 +6,10 @@ import { select, Store } from '@ngrx/store';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import ActionWithPayload from 'src/app/models/actionWithPayload.model';
 import { Todo } from 'src/app/models/todo.model';
-import { DELETE_TODO, UPDATE_TODO } from 'src/app/states/todo.action';
+import { CREATE_SUBTODO, DELETE_SUBTODO, DELETE_TODO, UPDATE_SUBTODO, UPDATE_TODO } from 'src/app/states/todo.action';
 import { getTodoById, TodoState } from 'src/app/states/todo.state';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { SubTodo } from 'src/app/models/subtodo.model';
 @Component({
   selector: 'app-todo-form',
   templateUrl: './todo-form.component.html',
@@ -27,8 +28,10 @@ export class TodoFormComponent implements OnInit, OnDestroy {
   title = new FormControl('', Validators.required);
   description = new FormControl('');
   status = new FormControl('todo',  Validators.required)
+  subtodos: SubTodo[] = [];
   
   toggleEdit = false;
+  addSubtodo = false;
 
   constructor(
     public dialogRef: MatDialogRef<TodoFormComponent>,
@@ -45,7 +48,7 @@ export class TodoFormComponent implements OnInit, OnDestroy {
           ofType(UPDATE_TODO),
           takeUntil(this.destroy$)
         )
-        .subscribe((data) => {
+        .subscribe(() => {
           this.toggleEdit = false;
         })
   }
@@ -63,9 +66,9 @@ export class TodoFormComponent implements OnInit, OnDestroy {
             this.title.setValue(todo!.title)
             this.description.setValue(todo!.description);
             this.status.setValue(todo!.status || 'todo');
+            this.subtodos = todo.subTodos!;
           }
         })
-    
     }
   }
 
@@ -74,7 +77,7 @@ export class TodoFormComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  changeStatus(status: string) {
+  changeStatus(status: string): void {
     this.status.setValue(status);
   }
 
@@ -128,6 +131,37 @@ export class TodoFormComponent implements OnInit, OnDestroy {
 
   onCancel(): void {
     this.toggleEdit = false;
+  }
+
+  onEnter(title: string): void {
+    const subTodo: SubTodo = {
+      title: title,
+      isDone: false,
+      todoId: this.id!
+    }
+
+    const subTodoAction: ActionWithPayload<SubTodo> = {
+      type: CREATE_SUBTODO,
+      payload: subTodo
+    }
+
+    this.store.dispatch(subTodoAction);
+  }
+
+  onDeleteSubtodo(subTodo: SubTodo): void {
+    const subTodoAction: ActionWithPayload<{subTodo: SubTodo, todoId: string}> = {
+      type: DELETE_SUBTODO,
+      payload: {
+        subTodo: subTodo,
+        todoId: this.id!,
+      }
+    }
+
+    this.store.dispatch(subTodoAction);
+  }
+
+  toggleAddSubtodo(): void {
+    this.addSubtodo = !this.addSubtodo;
   }
 
 }
