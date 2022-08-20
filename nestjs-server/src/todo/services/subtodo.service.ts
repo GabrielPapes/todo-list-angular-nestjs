@@ -23,16 +23,15 @@ export class SubtodoService {
     }
 
     async update(id, subtodoDTO: SubTodoDTO): Promise<Todo> {
+        subtodoDTO._id = new mongoose.Types.ObjectId(subtodoDTO._id);
         const todo = await this.todoModel.findById(subtodoDTO.todoId);
-        todo.subTodos = todo.subTodos.map(subTodo => subTodo._id === id ? subtodoDTO: subTodo);
+        todo.subTodos = todo.subTodos.map(subTodo => subTodo._id.equals(id) ? subtodoDTO: subTodo);
         todo.markModified('subTodos');
 
         return todo.save()
     }
 
     async delete(id, todoId): Promise<Todo> {
-        this.logger.warn(id, todoId)
-
         const todo = await this.todoModel.findById(todoId);
         todo.subTodos = todo.subTodos.filter(subTodo => !subTodo._id.equals(id));
         

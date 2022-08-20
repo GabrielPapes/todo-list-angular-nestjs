@@ -54,9 +54,7 @@ export class TodoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
     if(this.id) {
-      //const getSingleTodoAction = new GetSingleTodo(this.id);
       this.subscription = this.todoState$
         .pipe(
           select((states: any) => (getTodoById(this.id!))(states)
@@ -73,8 +71,11 @@ export class TodoFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe())
     this.destroy$.next(true);
     this.destroy$.complete();
+
+    this.subtodos = [];
   }
 
   changeStatus(status: string): void {
@@ -158,6 +159,21 @@ export class TodoFormComponent implements OnInit, OnDestroy {
     }
 
     this.store.dispatch(subTodoAction);
+  }
+
+  onSelectedChange(isDone: boolean, index: number) {
+    if(this.subtodos.length > 0) {
+      //Safe cloning object
+      const updatedSubtodos = JSON.parse(JSON.stringify(this.subtodos));
+      updatedSubtodos[index].isDone = isDone;
+  
+      const subTodoAction: ActionWithPayload<{subTodo: SubTodo, todoId: string}> = {
+        type: UPDATE_SUBTODO,
+        payload: updatedSubtodos[index]
+      }
+  
+      this.store.dispatch(subTodoAction);
+    }
   }
 
   toggleAddSubtodo(): void {

@@ -46,7 +46,7 @@
 
       <mat-card-content>
         <mat-selection-list #subTodos>
-          <div *ngFor="let subtodo of subtodos">
+          <div *ngFor="let subtodo of subtodos; let i = index">
             <div class="list-subtodo">
               <button
                 (click)="onDeleteSubtodo(subtodo)"
@@ -57,8 +57,8 @@
               >
                 <mat-icon>delete_forever</mat-icon>
               </button>
-              <mat-list-option>
-                {{ subtodo.title }}
+              <mat-list-option (selectedChange)="onSelectedChange($event, i)" [selected]="subtodos[i].isDone">
+                {{ subtodos[i].title }}
               </mat-list-option>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { catchError, map, mergeMap, Observable, of, ReplaySubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { SubTodo } from '../models/subtodo.model';
 import { Todo } from '../models/todo.model';
-import { CreateSubTodoSuccess, CreateTodo, CreateTodoSuccess, CREATE_SUBTODO, CREATE_SUBTODO_ERROR, CREATE_TODO, CREATE_TODO_ERROR, DeleteSubTodo, DeleteSubTodoSuccess, DeleteTodo, DeleteTodoSuccess, DELETE_SUBTODO, DELETE_SUBTODO_ERROR, DELETE_TODO, DELETE_TODO_ERROR, GetTodoSuccess, GET_TODO, GET_TODO_ERROR, TodoError, UpdateSubTodoSuccess, UpdateTodo, UpdateTodoSuccess, UPDATE_SUBTODO, UPDATE_SUBTODO_ERROR, UPDATE_TODO, UPDATE_TODO_ERROR } from '../states/todo.action';
+import { CreateSubTodoSuccess, CreateTodo, CreateTodoSuccess, CREATE_SUBTODO, CREATE_SUBTODO_ERROR, CREATE_TODO, CREATE_TODO_ERROR, DeleteSubTodo, DeleteSubTodoSuccess, DeleteTodo, DeleteTodoSuccess, DELETE_SUBTODO, DELETE_SUBTODO_ERROR, DELETE_TODO, DELETE_TODO_ERROR, GetTodoSuccess, GET_TODO, GET_TODO_ERROR, TodoError, UpdateSubTodo, UpdateSubTodoSuccess, UpdateTodo, UpdateTodoSuccess, UPDATE_SUBTODO, UPDATE_SUBTODO_ERROR, UPDATE_TODO, UPDATE_TODO_ERROR } from '../states/todo.action';
 
 const TODO_SERVICE = 'todo';
 const SUBTODO_SERVICE = 'subtodo';
@@ -126,13 +126,13 @@ export class TodoService {
   @Effect()
   updateSubTodo: Observable<Action> = this.action$.pipe(
     ofType(UPDATE_SUBTODO),
-    mergeMap((action: UpdateTodo) =>
+    mergeMap((action: UpdateSubTodo) =>
       this.httpClient.put(`${NEST_BACKEND_SUBTODO}/${action.payload._id}`, action.payload, {
         headers: { 'Content-type': 'application/json' }
       })
         .pipe(
           map(data => {
-            console.log('Http PUT Call Success: '); //, data)
+            console.log('Http PUT Call Success: ', data)
             return new UpdateSubTodoSuccess(action.payload as Todo);
           }),
           catchError(err => {

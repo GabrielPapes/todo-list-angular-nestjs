@@ -112,9 +112,9 @@ export class DeleteTodoSuccess implements Action {
 
 export class UpdateSubTodo implements Action {
     readonly type = UPDATE_SUBTODO;
-    payload: SubTodo
+    payload: Todo
 
-    constructor(payload: SubTodo) {
+    constructor(payload: Todo) {
         this.payload = payload;
     }
 }
