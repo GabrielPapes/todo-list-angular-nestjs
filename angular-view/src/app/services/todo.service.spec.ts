@@ -10,7 +10,9 @@ describe('TodoService', () => {
   let service: TodoService;
 
   beforeEach(() => {
-    const actionsStub = () => ({});
+    const actionsStub = () => ({
+      pipe: (arg: any) => ({}),
+    });
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [TodoService, { provide: Actions, useFactory: actionsStub }]
