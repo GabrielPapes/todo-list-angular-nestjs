@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
-import { SubTodoDTO } from '../dto/subtodo.dto';
+import { TodoDTO } from '../dto/todo.dto';
 
 export type TodoDocument = Todo & Document;
 
@@ -8,8 +8,11 @@ export type TodoDocument = Todo & Document;
 export class Todo {
     _id: ObjectId;
 
-    @Prop()
-    subTodos: SubTodoDTO[];
+    @Prop({type: mongoose.Types.ObjectId, ref: 'Todo',default: []})
+    parentId: mongoose.Types.ObjectId;
+
+    @Prop([{type: mongoose.Types.ObjectId, ref: 'Todo',default: []}])
+    children: Array<mongoose.Types.ObjectId>;
 
     @Prop({required: true})
     title: string;
