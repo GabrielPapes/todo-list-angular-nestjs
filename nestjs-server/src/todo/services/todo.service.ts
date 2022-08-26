@@ -6,62 +6,62 @@ import { Todo, TodoDocument } from '../models/todo.schema';
 
 @Injectable()
 export class TodoService {
-    logger = new Logger(TodoService.name);
+  logger = new Logger(TodoService.name);
 
-    constructor(
-        @InjectModel(Todo.name)
-        private todoModel: Model<TodoDocument>,
-    ) {}
+  constructor(
+    @InjectModel(Todo.name)
+    private todoModel: Model<TodoDocument>,
+  ) {}
 
-    async create(todoDTO: TodoDTO): Promise<Todo> {
-        const newTodo = new this.todoModel(todoDTO);
+  async create(todoDTO: TodoDTO): Promise<Todo> {
+    const newTodo = new this.todoModel(todoDTO);
 
-        if(todoDTO.parentId) {
-            const todo = await this.todoModel.findById(todoDTO.parentId);
-            const saved = await newTodo.save();
-            
-            const id = new mongoose.Types.ObjectId(saved._id);
+    if (todoDTO.parentId) {
+      const todo = await this.todoModel.findById(todoDTO.parentId);
+      const saved = await newTodo.save();
 
-            todo.children = [...todo.children, id]
-            todo.markModified('children');
-            await todo.save();
-            
-            return saved;
-        } else {
-            return newTodo.save()
-        }
+      const id = new mongoose.Types.ObjectId(saved._id);
+
+      todo.children = [...todo.children, id];
+      todo.markModified('children');
+      await todo.save();
+
+      return saved;
+    } else {
+      return newTodo.save();
     }
+  }
 
-    async update(id, todoDTO: TodoDTO): Promise<Todo> {
-        const todo = await this.todoModel.findById(id);
-        return todo.update(todoDTO);
-    }
+  async update(id, todoDTO: TodoDTO): Promise<Todo> {
+    const todo = await this.todoModel.findById(id);
+    return todo.update(todoDTO);
+  }
 
-    async delete(id): Promise<Todo[]> {
-        const todo = await this.todoModel.findById(id);
+  async delete(id): Promise<Todo[]> {
+    const todo = await this.todoModel.findById(id);
 
-        //TODO still not working. 
-        const deepSearch = (todo: Todo) => {
-            let idList = [todo._id];
-            if(todo?.children.length > 0) {
-                todo?.children.forEach(async childId => idList.push(...deepSearch(await this.todoModel.findById(childId))));
-            } 
-            return idList;
-        }
+    const deepSearchTodo = async (todo: Todo) => {
+      let idList = todo?.children ? [...todo.children] : [];
 
-        const ids = deepSearch(todo);
-        this.logger.log(ids);
+      for (let child of todo?.children) {
+        const childTodo = await this.todoModel.findById(child);
+        idList = [...idList, ...(await deepSearchTodo(childTodo))];
+      }
 
-        return this.todoModel.find({_id: { $in: ids }}).deleteMany();
-    }
+      return idList;
+    };
 
-    findAll(): Promise<Todo[]> {
-        return this.todoModel.find().exec();
-    }
+    const ids = [todo._id, ...(await deepSearchTodo(todo))];
 
-    async findById(id): Promise<Todo> {
-        const todo = await this.todoModel.findById(id);
-        return todo;
-    }
+    return this.todoModel.find({ _id: { $in: ids } }).deleteMany();
+  }
 
+  findAll(): Promise<Todo[]> {
+    return this.todoModel.find().exec();
+  }
+
+  async findById(id): Promise<Todo> {
+    const todo = await this.todoModel.findById(id);
+    return todo;
+  }
 }
