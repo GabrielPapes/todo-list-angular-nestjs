@@ -1,6 +1,9 @@
 # todo-list-angular-nestjs
 Todo list made with Angular frontend and NestJS backend 
 
+## To do
+- [] Fix wrong behavior with mat-tree reseting on render.
+
 Enter in both angular-view directory and nestjs-server and run:
 ```
     npm install
