@@ -1,6 +1,15 @@
-div {
-    display: flex;
-    padding: 0 5px;
-    height: 100vh;
-    overflow-x: auto;
-  }
+.todo-tree-invisible {
+  display: none;
+}
+
+.todo-tree .mat-nested-tree-node div[role="group"] {
+  padding-left: 40px;
+}
+
+.todo-tree div[role="group"] > .mat-tree-node {
+  padding-left: 40px;
+}
+
+.mat-form-field {
+  margin-right: 4px;
+}

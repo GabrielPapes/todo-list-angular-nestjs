@@ -43,7 +43,9 @@ export class TodoService {
     const deepSearchTodo = async (todo: Todo) => {
       let idList = todo?.children ? [...todo.children] : [];
 
-      for (const child of todo?.children) {
+      this.logger.log(todo)
+
+      for (const child of idList) {
         const childTodo = await this.todoModel.findById(child);
         idList = [...idList, ...(await deepSearchTodo(childTodo))];
       }
@@ -55,10 +57,12 @@ export class TodoService {
 
     // Removes itself from parent list. I believe this can be improved further.
     const parentTodo = await this.todoModel.findById(todo.parentId);
-    parentTodo.children = parentTodo.children.filter(child => !child.equals(todo._id));
-    parentTodo.markModified('children');
-    await parentTodo.save();
-    this.logger.log("Removed children ID from Parent: ", todo._id);
+    if(parentTodo) {
+      parentTodo.children = parentTodo.children.filter(child => !child.equals(todo._id));
+      parentTodo.markModified('children');
+      await parentTodo.save();
+      this.logger.log("Removed children ID from Parent: ", todo._id);
+    }
 
     return this.todoModel.find({ _id: { $in: ids } }).deleteMany();
   }

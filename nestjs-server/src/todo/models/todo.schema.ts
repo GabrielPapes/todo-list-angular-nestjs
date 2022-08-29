@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document, ObjectId } from 'mongoose';
-import { TodoDTO } from '../dto/todo.dto';
 
 export type TodoDocument = Todo & Document;
 
@@ -8,10 +7,10 @@ export type TodoDocument = Todo & Document;
 export class Todo {
     _id: ObjectId;
 
-    @Prop({type: mongoose.Types.ObjectId, ref: 'Todo',default: []})
+    @Prop({type: mongoose.Types.ObjectId, ref: 'Todo', default: undefined})
     parentId: mongoose.Types.ObjectId;
 
-    @Prop([{type: mongoose.Types.ObjectId, ref: 'Todo',default: []}])
+    @Prop([{type: mongoose.Types.ObjectId, ref: 'Todo', default: undefined}])
     children: Array<mongoose.Types.ObjectId>;
 
     @Prop({required: true})
@@ -19,9 +18,6 @@ export class Todo {
 
     @Prop()
     description: string;
-
-    @Prop({type: String, enum: ['todo', 'done', 'progress'], default: 'todo'})
-    status: string;
 
     @Prop()
     creationDate: Date;

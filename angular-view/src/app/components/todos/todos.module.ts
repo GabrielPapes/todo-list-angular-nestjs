@@ -28,15 +28,12 @@ import { todoReducer } from '../../states/todo.reducers';
 import { EffectsModule } from '@ngrx/effects';
 import { TodoService } from '../../services/todo.service';
 import { BoardComponent } from './board/board.component';
-import { ListComponent } from './list/list.component';
-import { CardComponent } from './card/card.component';
+import { MatTreeModule } from '@angular/material/tree';
 
 @NgModule({
   declarations: [
     TodoFormComponent,
-    BoardComponent,
-    ListComponent,
-    CardComponent,
+    BoardComponent
   ],
   imports: [
     BrowserModule,
@@ -62,6 +59,7 @@ import { CardComponent } from './card/card.component';
     StoreModule.forRoot({todos: todoReducer}),
     EffectsModule.forRoot([TodoService]),
     MatCheckboxModule,
+    MatTreeModule,
     
   ],
   exports: [

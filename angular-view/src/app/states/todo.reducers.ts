@@ -1,7 +1,7 @@
 import { Action } from "@ngrx/store";
 import ActionWithPayload from "../models/actionWithPayload.model";
 import { Todo } from "../models/todo.model";
-import { CREATE_SUBTODO, CREATE_SUBTODO_SUCCESS, CREATE_TODO, CREATE_TODO_SUCCESS, DELETE_SUBTODO, DELETE_SUBTODO_SUCCESS, DELETE_TODO, DELETE_TODO_SUCCESS, GET_SUBTODO_SUCCESS, GET_TODO, GET_TODO_ERROR, GET_TODO_SUCCESS, UPDATE_SUBTODO, UPDATE_SUBTODO_SUCCESS, UPDATE_TODO, UPDATE_TODO_SUCCESS } from "./todo.action";
+import { CREATE_TODO, CREATE_TODO_SUCCESS, DELETE_TODO, DELETE_TODO_SUCCESS, GET_TODO, GET_TODO_ERROR, GET_TODO_SUCCESS, UPDATE_TODO, UPDATE_TODO_SUCCESS } from "./todo.action";
 import { initializeState, TodoState } from "./todo.state";
 
 const initialState = initializeState();
@@ -71,67 +71,6 @@ export function todoReducer(state: TodoState = initialState, action: Action) {
             return ({
                 ...state,
                 TodoList: [...state.TodoList.filter(todo => todo._id !== (action as ActionWithPayload<Todo>).payload._id)],
-                Loading: false,
-                Loaded: true,
-
-            })
-
-        case CREATE_SUBTODO:
-            return ({
-                ...state,
-                Loading: true,
-                Loaded: false,
-
-            })
-
-        case UPDATE_SUBTODO:
-            return ({
-                ...state,
-                Loaded: false,
-                Loading: true,
-
-            });
-
-        case DELETE_SUBTODO:
-            return ({
-                ...state,
-                Loaded: false,
-                Loading: true,
-
-            });
-    
-
-        case GET_SUBTODO_SUCCESS:
-            return ({
-                ...state,
-                TodoList: state.TodoList.concat((action as ActionWithPayload<Todo[]>).payload),
-                Loading: false,
-                Loaded: true,
-
-            })
-
-        case CREATE_SUBTODO_SUCCESS:
-            return ({
-                ...state,
-                TodoList: [...state.TodoList.map(todo => todo._id === (action as ActionWithPayload<Todo>).payload._id ? (action as ActionWithPayload<Todo>).payload : todo)],
-                Loading: false,
-                Loaded: true,
-
-            })
-
-        case UPDATE_SUBTODO_SUCCESS:
-            return ({
-                ...state,
-                TodoList: [...state.TodoList.map(todo => todo._id === (action as ActionWithPayload<Todo>).payload._id ? (action as ActionWithPayload<Todo>).payload : todo)],
-                Loading: false,
-                Loaded: true,
-
-            })
-
-        case DELETE_SUBTODO_SUCCESS:
-            return ({
-                ...state,
-                TodoList: [...state.TodoList.map(todo => todo._id === (action as ActionWithPayload<Todo>).payload._id ? (action as ActionWithPayload<Todo>).payload : todo)],
                 Loading: false,
                 Loaded: true,
 

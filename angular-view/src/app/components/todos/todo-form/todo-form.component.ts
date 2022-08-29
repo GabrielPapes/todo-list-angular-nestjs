@@ -1,15 +1,15 @@
 import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { MatDialogRef} from '@angular/material/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { Actions, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import ActionWithPayload from 'src/app/models/actionWithPayload.model';
 import { Todo } from 'src/app/models/todo.model';
-import { CREATE_SUBTODO, DELETE_SUBTODO, DELETE_TODO, UPDATE_SUBTODO, UPDATE_TODO } from 'src/app/states/todo.action';
+import { CREATE_TODO, CREATE_TODO_SUCCESS, DELETE_TODO, UPDATE_TODO, UPDATE_TODO_SUCCESS } from 'src/app/states/todo.action';
 import { getTodoById, TodoState } from 'src/app/states/todo.state';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { SubTodo } from 'src/app/models/subtodo.model';
+
 @Component({
   selector: 'app-todo-form',
   templateUrl: './todo-form.component.html',
@@ -25,46 +25,53 @@ export class TodoFormComponent implements OnInit, OnDestroy {
   }
 
   id: string | null = null;
+  parentId: string | null = null;
   title = new FormControl('', Validators.required);
   description = new FormControl('');
-  status = new FormControl('todo',  Validators.required)
-  subtodos: SubTodo[] = [];
-  
+
   toggleEdit = false;
-  addSubtodo = false;
 
   constructor(
     public dialogRef: MatDialogRef<TodoFormComponent>,
     private store: Store<TodoState>,
     private actions: Actions,
-    @Inject(MAT_DIALOG_DATA) public data: {id: string}
+    @Inject(MAT_DIALOG_DATA) public data: { id: string, parentId: string }
   ) {
-      this.todoState$ = this.store;
-      this.subscriptions = new Array<Subscription>();
-      this.id = this.data.id;
+    this.todoState$ = this.store;
+    this.subscriptions = new Array<Subscription>();
+    this.id = this.data.id;
+    this.parentId = this.data.parentId;
 
-      this.actions
-        .pipe(
-          ofType(UPDATE_TODO),
-          takeUntil(this.destroy$)
-        )
-        .subscribe(() => {
-          this.toggleEdit = false;
-        })
+    this.actions
+      .pipe(
+        ofType(UPDATE_TODO_SUCCESS),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.dialogRef.close();
+      })
+
+    this.actions
+      .pipe(
+        ofType(CREATE_TODO_SUCCESS),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.dialogRef.close();
+      })
   }
 
   ngOnInit(): void {
-    if(this.id) {
+    if (this.id) {
       this.subscription = this.todoState$
         .pipe(
           select((states: any) => (getTodoById(this.id!))(states)
           ))
         .subscribe((todo: Todo | undefined) => {
-          if(todo) {
+          if (todo) {
             this.title.setValue(todo!.title)
             this.description.setValue(todo!.description);
-            this.status.setValue(todo!.status || 'todo');
-            this.subtodos = todo.subTodos!;
+            this.parentId = todo.parentId!;
           }
         })
     }
@@ -74,37 +81,19 @@ export class TodoFormComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe())
     this.destroy$.next(true);
     this.destroy$.complete();
-
-    this.subtodos = [];
-  }
-
-  changeStatus(status: string): void {
-    this.status.setValue(status);
-  }
-
-  getStatus() {
-    const statusText = (status: string) => {
-      return {
-        'todo': 'Para Fazer',
-        'progress': 'Em Progresso',
-        'done': 'Concluído'
-      }[status]
-    }
-
-    return statusText(this.status.value!);
   }
 
   onSubmit(): void {
     const todo: Todo = {
-      _id: this.id!,
+      _id: this.id || undefined,
       title: this.title.value!,
       description: this.description.value!,
-      status: this.status.value!,
       creationDate: new Date(),
+      parentId: this.parentId || undefined
     }
 
     const todoAction: ActionWithPayload<Todo> = {
-      type: UPDATE_TODO,
+      type: this.id ? UPDATE_TODO : CREATE_TODO,
       payload: todo
     }
 
@@ -118,7 +107,6 @@ export class TodoFormComponent implements OnInit, OnDestroy {
       _id: this.id!,
       title: this.title.value!,
       description: this.description.value!,
-      status: this.status.value!,
       creationDate: new Date(),
     }
 
@@ -132,52 +120,6 @@ export class TodoFormComponent implements OnInit, OnDestroy {
 
   onCancel(): void {
     this.toggleEdit = false;
-  }
-
-  onEnter(title: string): void {
-    const subTodo: SubTodo = {
-      title: title,
-      isDone: false,
-      todoId: this.id!
-    }
-
-    const subTodoAction: ActionWithPayload<SubTodo> = {
-      type: CREATE_SUBTODO,
-      payload: subTodo
-    }
-
-    this.store.dispatch(subTodoAction);
-  }
-
-  onDeleteSubtodo(subTodo: SubTodo): void {
-    const subTodoAction: ActionWithPayload<{subTodo: SubTodo, todoId: string}> = {
-      type: DELETE_SUBTODO,
-      payload: {
-        subTodo: subTodo,
-        todoId: this.id!,
-      }
-    }
-
-    this.store.dispatch(subTodoAction);
-  }
-
-  onSelectedChange(isDone: boolean, index: number) {
-    if(this.subtodos.length > 0) {
-      //Safe cloning object
-      const updatedSubtodos = JSON.parse(JSON.stringify(this.subtodos));
-      updatedSubtodos[index].isDone = isDone;
-  
-      const subTodoAction: ActionWithPayload<{subTodo: SubTodo, todoId: string}> = {
-        type: UPDATE_SUBTODO,
-        payload: updatedSubtodos[index]
-      }
-  
-      this.store.dispatch(subTodoAction);
-    }
-  }
-
-  toggleAddSubtodo(): void {
-    this.addSubtodo = !this.addSubtodo;
   }
 
 }
